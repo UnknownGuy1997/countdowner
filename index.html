@@ -332,7 +332,7 @@
             document.getElementById('progress-fill').style.width = `${progress}%`;
 
             // Update cat positions (they get closer as summer approaches)
-            const maxDistance = 45; // Maximum distance from center
+            const maxDistance = 65; // Maximum distance from center
             const currentDistance = Math.max(5, maxDistance * (distance / totalDistance)); // Minimum 5% from center
             
             document.documentElement.style.setProperty('--left-position', `${50 - currentDistance}%`);
