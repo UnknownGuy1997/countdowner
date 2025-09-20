@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer Countdown - Until We Meet</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1F1F1F;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .countdown-container {
+            background: #1F1F1F;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e6b17a;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(230, 177, 122, 0.3);
+        }
+
+        .cats-scene {
+            position: relative;
+            height: 120px;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+        }
+
+        .cat {
+            position: absolute;
+            font-size: 48px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 2s ease-in-out;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .cat-left {
+            left: var(--left-position, 10%);
+            animation-delay: 0s;
+        }
+
+        .cat-right {
+            right: var(--right-position, 10%);
+            animation-delay: 1.5s;
+            transform: translateY(-50%) scaleX(-1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-60%) scale(1.05); }
+        }
+
+        @keyframes floatRight {
+            0%, 100% { transform: translateY(-50%) scaleX(-1) scale(1); }
+            50% { transform: translateY(-60%) scaleX(-1) scale(1.05); }
+        }
+
+        .cat-right {
+            animation-name: floatRight;
+        }
+
+        .hearts {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .hearts.visible {
+            opacity: 1;
+        }
+
+        .heart {
+            display: inline-block;
+            font-size: 16px;
+            color: #e6b17a;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            margin: 0 2px;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .time-unit {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 16px 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .time-unit:hover {
+            border-color: #e6b17a;
+            box-shadow: 0 0 10px rgba(230, 177, 122, 0.2);
+        }
+
+        .time-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e6b17a;
+            margin-bottom: 4px;
+            text-shadow: 0 0 8px rgba(230, 177, 122, 0.4);
+        }
+
+        .time-label {
+            font-size: 12px;
+            color: #ccc;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #2a2a2a;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 1px solid #3a3a3a;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e6b17a, #d4a068);
+            border-radius: 3px;
+            transition: width 1s ease;
+            box-shadow: 0 0 10px rgba(230, 177, 122, 0.5);
+        }
+
+        .message {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 16px;
+            font-style: italic;
+        }
+
+        .distance-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .summer-icon {
+            font-size: 20px;
+            margin: 0 8px;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .celebration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .celebration.active {
+            opacity: 1;
+        }
+
+        .confetti {
+            position: absolute;
+            font-size: 20px;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(400px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="countdown-container">
+        <div class="title">
+            <span class="summer-icon">☀️</span>
+            До встречи летом
+            <span class="summer-icon">☀️</span>
+        </div>
+        
+        <div class="cats-scene" id="cats-scene">
+            <div class="cat cat-left" id="cat-left">🐱</div>
+            <div class="cat cat-right" id="cat-right">🐱</div>
+            <div class="hearts" id="hearts">
+                <span class="heart">💖</span>
+                <span class="heart">💖</span>
+                <span class="heart">💖</span>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="countdown-grid">
+            <div class="time-unit">
+                <div class="time-number" id="days">--</div>
+                <div class="time-label">Дней</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-number" id="hours">--</div>
+                <div class="time-label">Часов</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-number" id="minutes">--</div>
+                <div class="time-label">Минут</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-number" id="seconds">--</div>
+                <div class="time-label">Секунд</div>
+            </div>
+        </div>
+
+        <div class="message" id="message">Скоро мы будем вместе... 🌸</div>
+        <div class="distance-info" id="distance-info">Коты сближаются по мере приближения лета</div>
+
+        <div class="celebration" id="celebration">
+            <!-- Confetti will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        // Target date: June 1, 2025 (local time)
+        // Note: getFullYear() returns current year, so let's be explicit about 2025
+        const currentYear = new Date().getFullYear();
+        let targetYear = 2025;
+        
+        // If we're already past June 1, 2025, target next year
+        const now = new Date();
+        const june2025 = new Date(2025, 5, 1, 0, 0, 0);
+        if (now >= june2025) {
+            targetYear = 2026;
+        }
+        
+        const targetDate = new Date(targetYear, 5, 1, 0, 0, 0).getTime(); // Month is 0-indexed, so 5 = June
+        const startDate = new Date(targetYear - 1, 0, 1, 0, 0, 0).getTime(); // January 1 of previous year
+        
+        const messages = [
+            "Скоро мы будем вместе... 🌸",
+            "Каждый день нас приближает к встрече 💕",
+            "Лето будет волшебным! ✨",
+            "Считаем дни до нашей встречи 🥰",
+            "Терпение, котята... лето близко! 🌺"
+        ];
+
+        let messageIndex = 0;
+
+        function updateCountdown() {
+            // Get current local time
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            const totalDistance = targetDate - startDate;
+            
+            // Debug info - shows what year we're targeting
+            console.log('Current time:', new Date(now).toLocaleString());
+            console.log('Target time:', new Date(targetDate).toLocaleString());
+            console.log('Target year:', targetYear);
+            console.log('Distance (days):', Math.floor(distance / (1000 * 60 * 60 * 24)));
+            
+            if (distance < 0) {
+                // Summer has arrived!
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                document.getElementById('message').textContent = 'Лето наступило! 🎉';
+                document.getElementById('distance-info').textContent = 'Коты наконец вместе! 💖';
+                
+                // Show celebration
+                showCelebration();
+                return;
+            }
+
+            // Calculate time units
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update display
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+            // Update progress bar
+            const progress = Math.max(0, Math.min(100, ((totalDistance - distance) / totalDistance) * 100));
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+
+            // Update cat positions (they get closer as summer approaches)
+            const maxDistance = 45; // Maximum distance from center
+            const currentDistance = Math.max(5, maxDistance * (distance / totalDistance)); // Minimum 5% from center
+            
+            document.documentElement.style.setProperty('--left-position', `${50 - currentDistance}%`);
+            document.documentElement.style.setProperty('--right-position', `${50 - currentDistance}%`);
+
+            // Show hearts when cats are close (last 30 days)
+            const hearts = document.getElementById('hearts');
+            if (days <= 30) {
+                hearts.classList.add('visible');
+            } else {
+                hearts.classList.remove('visible');
+            }
+
+            // Update message occasionally
+            if (seconds === 0 && minutes % 2 === 0) {
+                messageIndex = (messageIndex + 1) % messages.length;
+                document.getElementById('message').textContent = messages[messageIndex];
+            }
+
+            // Update distance info with target year
+            const localTime = new Date().toLocaleTimeString();
+            document.getElementById('distance-info').textContent = 
+                `До июня ${targetYear} • Время: ${localTime}`;
+        }
+
+        function showCelebration() {
+            const celebration = document.getElementById('celebration');
+            celebration.classList.add('active');
+            
+            // Create confetti
+            const confettiEmojis = ['🎉', '💖', '✨', '🌸', '💕', '🎊', '⭐', '🌺'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    
+                    celebration.appendChild(confetti);
+                    
+                    // Remove confetti after animation
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }, 5000);
+                }, i * 200);
+            }
+
+            // Move cats to center
+            document.documentElement.style.setProperty('--left-position', '45%');
+            document.documentElement.style.setProperty('--right-position', '45%');
+            
+            // Show hearts
+            document.getElementById('hearts').classList.add('visible');
+        }
+
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Initial cat positioning based on current progress
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCountdown();
+        });
+    </script>
+</body>
+</html>
